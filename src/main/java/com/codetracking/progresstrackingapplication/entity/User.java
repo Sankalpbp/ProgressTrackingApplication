@@ -40,4 +40,7 @@ public class User {
     )
     private Date dateJoined;
 
+    @OneToMany ( mappedBy = "user" )
+    private Set<Solution> solutions;
+
 }

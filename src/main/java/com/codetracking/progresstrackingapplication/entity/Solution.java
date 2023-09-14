@@ -32,4 +32,10 @@ public class Solution {
     )
     private String languageUsed;
 
+    @ManyToOne
+    @JoinColumn (
+            name = "user_id",
+            nullable = false
+    )
+    private User user;
 }
