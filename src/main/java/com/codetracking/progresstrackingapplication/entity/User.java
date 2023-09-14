@@ -40,7 +40,12 @@ public class User {
     )
     private Date dateJoined;
 
-    @OneToMany ( mappedBy = "user" )
+    @OneToMany (
+            mappedBy = "user",
+            cascade = CascadeType.REMOVE,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
     private Set<Solution> solutions;
 
 }

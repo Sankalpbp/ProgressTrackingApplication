@@ -32,14 +32,18 @@ public class Solution {
     )
     private String languageUsed;
 
-    @ManyToOne
+    @ManyToOne (
+            fetch = FetchType.LAZY
+    )
     @JoinColumn (
             name = "user_id",
             nullable = false
     )
     private User user;
 
-    @ManyToOne
+    @ManyToOne (
+            fetch = FetchType.EAGER
+    )
     @JoinColumn (
             name = "problem_id",
             nullable = false
