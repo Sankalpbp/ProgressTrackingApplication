@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,5 +25,8 @@ public class Topic {
             nullable = false
     )
     private String name;
+
+    @ManyToMany ( mappedBy = "relatedTopics" )
+    Set<Problem> problems;
 
 }

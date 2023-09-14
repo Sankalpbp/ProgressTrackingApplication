@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,5 +37,19 @@ public class Problem {
             nullable = false
     )
     private String difficulty;
+
+    @ManyToMany (
+            fetch = FetchType.LAZY
+    )
+    @JoinTable (
+            name = "problem_topic_mapping",
+            joinColumns = @JoinColumn (
+                    name = "problem_id"
+            ),
+            inverseJoinColumns = @JoinColumn (
+                name = "topic_id"
+            )
+    )
+    private Set<Topic> relatedTopics;
 
 }
