@@ -11,10 +11,12 @@ public class UserDetailsImpl implements UserDetails {
 
     private final String username;
     private final String password;
+    private final String email;
 
     public UserDetailsImpl ( User user ) {
         this.username = user.getName ();
         this.password = user.getPassword ();
+        this.email = user.getEmail ();
     }
 
     @Override
@@ -27,9 +29,14 @@ public class UserDetailsImpl implements UserDetails {
         return this.password;
     }
 
+    /**
+     * 'username' is used for uniquely identifying the user
+     * and email has been used here to uniquely identifying the user
+     * @return String email
+     */
     @Override
     public String getUsername() {
-        return this.username;
+        return this.email;
     }
 
     @Override

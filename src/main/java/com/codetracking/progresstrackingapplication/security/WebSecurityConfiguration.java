@@ -1,7 +1,10 @@
 package com.codetracking.progresstrackingapplication.security;
 
+import com.codetracking.progresstrackingapplication.service.impl.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -27,35 +30,33 @@ public class WebSecurityConfiguration {
      */
 
     @Bean
-    public UserDetailsService userDetailsService ( PasswordEncoder encoder ) {
-        UserDetails admin = User.withUsername ( "Monty" )
-                                .password ( encoder.encode ( "something" ) )
-                                .roles ( "ADMIN" )
-                                .build ();
-
-        UserDetails user = User.withUsername ( "Shanti" )
-                               .password ( encoder.encode ( "something2" ) )
-                               .roles ( "USER" )
-                               .build ();
-
-        return new InMemoryUserDetailsManager ( admin, user );
+    public UserDetailsService userDetailsService ( ) {
+        return new UserDetailsServiceImpl ();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain ( HttpSecurity http ) throws Exception {
         return http.csrf ( AbstractHttpConfigurer::disable )
                         .authorizeHttpRequests ( authorizeHttpRequests -> authorizeHttpRequests
-                                                                            .requestMatchers ( "/progress/welcome" )
+                                                                            .requestMatchers ( "/progress/welcome", "/auth/signIn" )
                                                                             .permitAll ()
                                                                             .requestMatchers ( "/progress/**" )
                                                                             .authenticated () )
-                   .formLogin ( Customizer.withDefaults () )
+                   .httpBasic( Customizer.withDefaults () )
                    .build ();
     }
 
     @Bean
     public PasswordEncoder passwordEncoder () {
         return new BCryptPasswordEncoder ();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider () {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService ( userDetailsService () );
+        authenticationProvider.setPasswordEncoder ( passwordEncoder() );
+        return authenticationProvider;
     }
 
 }
