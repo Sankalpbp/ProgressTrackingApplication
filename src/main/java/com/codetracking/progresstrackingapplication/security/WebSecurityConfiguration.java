@@ -39,10 +39,11 @@ public class WebSecurityConfiguration {
         return http.csrf ( AbstractHttpConfigurer::disable )
                         .authorizeHttpRequests ( authorizeHttpRequests -> authorizeHttpRequests
                                                                             .requestMatchers ( "/progress/welcome", "/auth/signIn" )
-                                                                            .permitAll ()
-                                                                            .requestMatchers ( "/progress/**" )
+                                                                            .permitAll () )
+                        .authorizeHttpRequests ( authorizeHttpRequests -> authorizeHttpRequests
+                                                                            .requestMatchers ( "/progress/**", "/topics/**" )
                                                                             .authenticated () )
-                   .httpBasic( Customizer.withDefaults () )
+                   .httpBasic ( Customizer.withDefaults () )
                    .build ();
     }
 

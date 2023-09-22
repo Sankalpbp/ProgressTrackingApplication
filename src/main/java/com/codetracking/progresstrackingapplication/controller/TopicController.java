@@ -20,11 +20,16 @@ public class TopicController {
         this.service = service;
     }
 
+    /*
+        TODO: This API shouldn't be publicly accessible.
+         Any addition of topic / problem from the user should be taken as a request
+         How?
+         The simplest way I could think so far is to have only a single Admin,
+         and this api would fail for any other user
+    */
     @PostMapping
-    @PreAuthorize ( "hasRole('ROLE_ADMIN')" )
     public ResponseEntity<TopicDTO> addTopic (@RequestBody TopicDTO topic ) {
         return new ResponseEntity<>( service.addTopic ( topic ), HttpStatus.CREATED );
     }
-
 
 }

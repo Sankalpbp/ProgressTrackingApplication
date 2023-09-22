@@ -1,6 +1,5 @@
 package com.codetracking.progresstrackingapplication.entity;
 
-import com.codetracking.progresstrackingapplication.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -46,12 +45,6 @@ public class User {
             nullable = false
     )
     private Date dateJoined;
-
-    @Column (
-            name = "role",
-            nullable = false
-    )
-    private Role role;
 
     @OneToMany (
             mappedBy = "user",

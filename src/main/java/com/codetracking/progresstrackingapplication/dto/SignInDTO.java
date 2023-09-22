@@ -1,6 +1,5 @@
 package com.codetracking.progresstrackingapplication.dto;
 
-import com.codetracking.progresstrackingapplication.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,8 +17,6 @@ public class SignInDTO {
     private String email;
 
     private String password;
-
-    private Role role;
 
     private Date dateJoined;
 

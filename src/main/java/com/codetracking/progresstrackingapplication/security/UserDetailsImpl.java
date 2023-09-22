@@ -1,11 +1,7 @@
 package com.codetracking.progresstrackingapplication.security;
 
-import com.codetracking.progresstrackingapplication.constants.AuthConstants;
-import com.codetracking.progresstrackingapplication.constants.Symbols;
 import com.codetracking.progresstrackingapplication.entity.User;
-import com.codetracking.progresstrackingapplication.enums.Role;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
@@ -25,7 +21,7 @@ public class UserDetailsImpl implements UserDetails {
         this.username = user.getName ();
         this.password = user.getPassword ();
         this.email = user.getEmail ();
-        this.authorities = Collections.singleton ( new SimpleGrantedAuthority ( user.getRole ().name () ) );
+        this.authorities = Collections.emptySet();
     }
 
     @Override
