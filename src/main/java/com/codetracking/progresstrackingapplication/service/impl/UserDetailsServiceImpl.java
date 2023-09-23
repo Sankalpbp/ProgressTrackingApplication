@@ -15,11 +15,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
+    /* email is what uniquely identifies the user */
     @Override
-    public UserDetails loadUserByUsername ( String username ) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByName ( username );
+    public UserDetails loadUserByUsername ( String email ) throws UsernameNotFoundException {
+        Optional<User> user = userRepository.findByEmail ( email );
         return user.map ( UserDetailsImpl :: new )
-                   .orElseThrow ( () -> new UsernameNotFoundException ( "user not found: " + username ) );
+                   .orElseThrow ( () -> new UsernameNotFoundException ( "user not found: " + email ) );
     }
 
 }
