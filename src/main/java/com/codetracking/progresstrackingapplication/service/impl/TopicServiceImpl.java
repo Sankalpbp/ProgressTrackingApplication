@@ -2,10 +2,13 @@ package com.codetracking.progresstrackingapplication.service.impl;
 
 import com.codetracking.progresstrackingapplication.dto.TopicDTO;
 import com.codetracking.progresstrackingapplication.entity.Topic;
+import com.codetracking.progresstrackingapplication.exception.ResourceNotFoundException;
 import com.codetracking.progresstrackingapplication.repository.TopicRepository;
 import com.codetracking.progresstrackingapplication.service.TopicService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class TopicServiceImpl implements TopicService {
@@ -18,6 +21,22 @@ public class TopicServiceImpl implements TopicService {
                               ModelMapper mapper ) {
         this.repository = repository;
         this.mapper = mapper;
+    }
+
+    public List<TopicDTO> getAllTopics ( ) {
+        List<Topic> topics = repository.findAll ();
+        return topics.stream ()
+                     .map ( this :: mapToDTO )
+                     .toList ();
+    }
+
+    @Override
+    public TopicDTO getTopic ( String name ) {
+        Topic topic = repository.findByName ( name )
+                .orElseThrow ( () -> new ResourceNotFoundException ( "topic",
+                                                                     "name",
+                                                                     name ) );
+        return mapToDTO ( topic );
     }
 
     @Override
