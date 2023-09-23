@@ -35,7 +35,7 @@ public class WebSecurityConfiguration {
     public SecurityFilterChain securityFilterChain ( HttpSecurity http ) throws Exception {
         return http.csrf ( AbstractHttpConfigurer::disable )
                         .authorizeHttpRequests ( authorizeHttpRequests -> authorizeHttpRequests
-                                                                            .requestMatchers ( "/progress/welcome", "/auth/signIn" )
+                                                                            .requestMatchers ( "/progress/welcome", "/auth/signIn", "/auth/login" )
                                                                             .permitAll () )
                         .authorizeHttpRequests ( authorizeHttpRequests -> authorizeHttpRequests
                                                                             .requestMatchers ( "/progress/**", "/topics/**" )

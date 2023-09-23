@@ -5,19 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-
-@Getter @Setter
+@Setter @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignInDTO extends AuthDTO {
+public class LoginDTO extends AuthDTO {
 
     private String name;
 
     private String email;
-
-    private String password;
-
-    private Date dateJoined;
 
 }
