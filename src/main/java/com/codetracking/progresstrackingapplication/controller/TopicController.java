@@ -19,7 +19,7 @@ public class TopicController {
     }
 
     /*
-        TODO: This API shouldn't be publicly accessible.
+        TODO: add, and delete, APIs shouldn't be publicly accessible.
          Any addition of topic / problem from the user should be taken as a request
          How?
          The simplest way I could think so far is to have only a single Admin,
@@ -38,6 +38,11 @@ public class TopicController {
     @GetMapping
     public ResponseEntity<List<TopicDTO>> getAllTopics ( ) {
         return ResponseEntity.ok ( service.getAllTopics ( ) );
+    }
+
+    @DeleteMapping ( "/{topicName}" )
+    public ResponseEntity<String> deleteTopic ( @PathVariable ( "topicName" ) String topicName ) {
+        return ResponseEntity.ok ( service.deleteTopic ( topicName ) );
     }
 
 }

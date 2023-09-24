@@ -1,5 +1,6 @@
 package com.codetracking.progresstrackingapplication.entity;
 
+import com.codetracking.progresstrackingapplication.enums.Difficulty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,7 +23,8 @@ public class Problem {
 
     @Column (
             name = "name",
-            nullable = false
+            nullable = false,
+            unique = true
     )
     private String name;
 
@@ -36,7 +38,7 @@ public class Problem {
             name = "difficulty",
             nullable = false
     )
-    private String difficulty;
+    private Difficulty difficulty;
 
     @ManyToMany (
             fetch = FetchType.LAZY

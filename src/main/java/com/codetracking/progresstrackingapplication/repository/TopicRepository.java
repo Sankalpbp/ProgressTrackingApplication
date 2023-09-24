@@ -9,4 +9,6 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
 
     public Optional<Topic> findByName ( String name );
 
+    public void deleteByName ( String name );
+
 }

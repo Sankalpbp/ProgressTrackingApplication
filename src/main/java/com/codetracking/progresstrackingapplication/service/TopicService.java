@@ -12,4 +12,6 @@ public interface TopicService {
 
     public List<TopicDTO> getAllTopics ( );
 
+    public String deleteTopic ( String name ) ;
+
 }

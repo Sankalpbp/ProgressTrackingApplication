@@ -5,6 +5,7 @@ import com.codetracking.progresstrackingapplication.entity.Topic;
 import com.codetracking.progresstrackingapplication.exception.ResourceNotFoundException;
 import com.codetracking.progresstrackingapplication.repository.TopicRepository;
 import com.codetracking.progresstrackingapplication.service.TopicService;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,13 @@ public class TopicServiceImpl implements TopicService {
                               ModelMapper mapper ) {
         this.repository = repository;
         this.mapper = mapper;
+    }
+
+    @Override
+    @Transactional
+    public String deleteTopic ( String topicName ) {
+        repository.deleteByName ( topicName );
+        return "Topic Deleted successfully!";
     }
 
     public List<TopicDTO> getAllTopics ( ) {

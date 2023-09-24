@@ -38,7 +38,7 @@ public class WebSecurityConfiguration {
                                                                             .requestMatchers ( "/progress/welcome", "/auth/signIn", "/auth/login" )
                                                                             .permitAll () )
                         .authorizeHttpRequests ( authorizeHttpRequests -> authorizeHttpRequests
-                                                                            .requestMatchers ( "/progress/**", "/topics/**" )
+                                                                            .requestMatchers ( "/progress/**", "/topics/**", "/problems/**" )
                                                                             .authenticated () )
                    .httpBasic ( Customizer.withDefaults () )
                    .build ();
