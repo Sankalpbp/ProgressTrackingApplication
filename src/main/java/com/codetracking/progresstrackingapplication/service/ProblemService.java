@@ -16,4 +16,6 @@ public interface ProblemService {
 
     public ProblemDTO updateProblem ( ProblemDTO problem );
 
+    public List<ProblemDTO> getProblemsByTopic ( String topicName );
+
 }

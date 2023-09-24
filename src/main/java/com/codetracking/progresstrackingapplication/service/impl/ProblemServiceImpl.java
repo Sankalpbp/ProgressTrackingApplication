@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -79,6 +80,12 @@ public class ProblemServiceImpl implements ProblemService {
         Problem problem = mapToEntity ( dto );
         problem.setRelatedTopics ( relatedTopics );
         return mapToDTO ( repository.save ( problem ) );
+    }
+
+    @Override
+    public List<ProblemDTO> getProblemsByTopic ( String topicName ) {
+        /* TODO: Complete the SQL query implementation */
+        return new ArrayList<>();
     }
 
     private Problem mapToEntity ( ProblemDTO dto ) {

@@ -44,4 +44,9 @@ public class ProblemController {
         return ResponseEntity.ok ( service.updateProblem ( problem ) );
     }
 
+    @GetMapping ( "/{topicName}" )
+    public ResponseEntity<List<ProblemDTO>> getProblemsByTopic ( @PathVariable ( "topicName" ) String topicName ) {
+        return ResponseEntity.ok ( service.getProblemsByTopic ( topicName ) );
+    }
+
 }
