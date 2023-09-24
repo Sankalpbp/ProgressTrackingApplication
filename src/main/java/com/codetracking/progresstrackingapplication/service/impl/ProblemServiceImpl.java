@@ -8,9 +8,11 @@ import com.codetracking.progresstrackingapplication.exception.ResourceNotFoundEx
 import com.codetracking.progresstrackingapplication.repository.ProblemRepository;
 import com.codetracking.progresstrackingapplication.repository.TopicRepository;
 import com.codetracking.progresstrackingapplication.service.ProblemService;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,6 +34,40 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     @Override
+    public ProblemDTO updateProblem ( ProblemDTO dto ) {
+        Problem problem = repository.findByName ( dto.getName () )
+                                    .orElseThrow ( () -> new ResourceNotFoundException ( "problem",
+                                                                                         "name",
+                                                                                         dto.getName () ) );
+        Problem updatedProblem = mapToEntity ( dto );
+        updatedProblem.setId ( problem.getId () );
+        return mapToDTO ( repository.save ( updatedProblem ) );
+    }
+
+    @Override
+    @Transactional
+    public String deleteProblemByName ( String problemName ) {
+        repository.deleteByName ( problemName );
+        return "Problem deleted successfully!";
+    }
+
+    @Override
+    public ProblemDTO getProblemByName ( String problemName ) {
+        Problem problem = repository.findByName ( problemName )
+                                    .orElseThrow ( () -> new ResourceNotFoundException ( "problem",
+                                                                                         "name",
+                                                                                         problemName ) );
+        return mapToDTO ( problem );
+    }
+
+    @Override
+    public List<ProblemDTO> getAllProblems () {
+        return repository.findAll ().stream ()
+                                    .map ( this :: mapToDTO )
+                                    .toList ();
+    }
+
+    @Override
     public ProblemDTO addProblem ( ProblemDTO dto ) {
         Set<Topic> relatedTopics = dto.getRelatedTopics ().stream ()
                                                   .map ( TopicDTO :: getName )
@@ -46,14 +82,22 @@ public class ProblemServiceImpl implements ProblemService {
     }
 
     private Problem mapToEntity ( ProblemDTO dto ) {
-        return mapper.map ( dto, Problem.class );
+        Problem problem = mapper.map ( dto, Problem.class );
+        problem.getRelatedTopics ().clear ();
+        dto.getRelatedTopics ().stream ()
+                               .map ( TopicDTO :: getName )
+                               .map ( name -> topicRepository.findByName ( name )
+                                                             .orElseThrow ( () -> new ResourceNotFoundException ( "topics",
+                                                                                                                  "name",
+                                                                                                                  name ) ) )
+                               .forEach ( topic -> problem.getRelatedTopics ().add ( topic ) );
+        return problem;
     }
 
     private ProblemDTO mapToDTO ( Problem problem ) {
         ProblemDTO dto = mapper.map ( problem, ProblemDTO.class );
         dto.setRelatedTopics ( dto.getRelatedTopics ().stream ()
-                                                      .map ( TopicDTO :: getName )
-                                                      .map ( TopicDTO :: new )
+                                                      .map ( topicDTO -> new TopicDTO ( topicDTO.getId (), topicDTO.getName () ) )
                                                       .collect ( Collectors.toSet () ) );
         return dto;
     }

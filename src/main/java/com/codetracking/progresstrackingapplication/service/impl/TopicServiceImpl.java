@@ -27,6 +27,11 @@ public class TopicServiceImpl implements TopicService {
     @Override
     @Transactional
     public String deleteTopic ( String topicName ) {
+        /*
+         *  This method has to be annotated with @Transactional since
+         *  it is going to remove the associated entries from the
+         *  problem_topic_mapping table as well
+         */
         repository.deleteByName ( topicName );
         return "Topic Deleted successfully!";
     }

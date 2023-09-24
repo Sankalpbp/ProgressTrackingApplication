@@ -19,7 +19,8 @@ public class TopicDTO {
 
     private List<Problem> problems;
 
-    public TopicDTO ( String name ) {
+    public TopicDTO ( long id, String name ) {
+        this.id = id;
         this.name = name;
     }
 
