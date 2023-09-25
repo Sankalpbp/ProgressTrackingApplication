@@ -3,6 +3,7 @@ package com.codetracking.progresstrackingapplication.controller;
 import com.codetracking.progresstrackingapplication.constants.ApiConstants;
 import com.codetracking.progresstrackingapplication.dto.SolutionDTO;
 import com.codetracking.progresstrackingapplication.dto.SolutionsCountDTO;
+import com.codetracking.progresstrackingapplication.dto.SolutionsResponseDTO;
 import com.codetracking.progresstrackingapplication.entity.Solution;
 import com.codetracking.progresstrackingapplication.service.ProgressTrackingService;
 import org.springframework.http.HttpStatus;
@@ -45,6 +46,12 @@ public class ProgressTrackingController {
     public ResponseEntity<SolutionsCountDTO> getSolutionsCount (@AuthenticationPrincipal UserDetails userDetails,
                                                                 @PathVariable ( "problemName" ) String problemName ) {
         return ResponseEntity.ok ( service.getSolutionsCount ( userDetails.getUsername (), problemName ) );
+    }
+
+    @GetMapping ( "/{problemName}" )
+    public ResponseEntity<SolutionsResponseDTO> getSolutions (@AuthenticationPrincipal UserDetails userDetails,
+                                                              @PathVariable ( "problemName" ) String problemName ) {
+        return ResponseEntity.ok ( service.getSolutions ( userDetails.getUsername (), problemName ) );
     }
 
 }

@@ -1,9 +1,6 @@
 package com.codetracking.progresstrackingapplication.service.impl;
 
-import com.codetracking.progresstrackingapplication.dto.ProblemDTO;
-import com.codetracking.progresstrackingapplication.dto.SolutionDTO;
-import com.codetracking.progresstrackingapplication.dto.SolutionsCountDTO;
-import com.codetracking.progresstrackingapplication.dto.TopicDTO;
+import com.codetracking.progresstrackingapplication.dto.*;
 import com.codetracking.progresstrackingapplication.entity.Solution;
 import com.codetracking.progresstrackingapplication.entity.User;
 import com.codetracking.progresstrackingapplication.exception.AuthenticationFailedException;
@@ -16,6 +13,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class ProgressTrackingServiceImpl implements ProgressTrackingService {
@@ -54,6 +52,22 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
     }
 
     @Override
+    public SolutionsResponseDTO getSolutions (String email, String problemName ) {
+        User user = userRepository.findByEmail ( email )
+                                  .orElseThrow ( () -> new AuthenticationFailedException ( "email not found" ) );
+
+        List<Solution> solutions = repository.findByProblem ( problemName, user.getId () );
+
+        SolutionsResponseDTO response = new SolutionsResponseDTO();
+        solutions.forEach (
+                solution -> response.getSolutions ().add ( createSolutionRecord ( solution ) )
+        );
+
+        response.setRelatedProblem ( createProblemDTO ( solutions.get ( 0 ) ) );
+        return response;
+    }
+
+    @Override
     public SolutionsCountDTO getSolutionsCount ( String email, String problemName ) {
         User user = userRepository.findByEmail ( email )
                                   .orElseThrow ( () -> new AuthenticationFailedException ( "email not found" ) );
@@ -67,14 +81,26 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
 
     private SolutionDTO mapToDTO ( Solution solution ) {
         SolutionDTO dto = mapper.map ( solution, SolutionDTO.class );
+        dto.setProblem ( createProblemDTO ( solution ) );
+        return dto;
+    }
+
+    private ProblemDTO createProblemDTO ( Solution solution ) {
         ProblemDTO problemDTO = mapper.map ( solution.getProblem (), ProblemDTO.class );
         problemDTO.getRelatedTopics ().clear ();
         solution.getProblem ().getRelatedTopics ()
-                              .stream ()
-                              .map ( topic -> new TopicDTO ( topic.getId (), topic.getName () ) )
-                              .forEach ( topicDTO -> problemDTO.getRelatedTopics ().add ( topicDTO ) );
-        dto.setProblem ( problemDTO );
-        return dto;
+                .stream ()
+                .map ( topic -> new TopicDTO ( topic.getId (), topic.getName () ) )
+                .forEach ( topicDTO -> problemDTO.getRelatedTopics ().add ( topicDTO ) );
+        return problemDTO;
+    }
+
+    private SolutionsResponseDTO.SolutionRecord createSolutionRecord ( Solution solution ) {
+        SolutionsResponseDTO.SolutionRecord solutionRecord = new SolutionsResponseDTO.SolutionRecord();
+        solutionRecord.setId ( solution.getId () );
+        solutionRecord.setTime ( solution.getTime () );
+        solutionRecord.setLanguageUsed ( solution.getLanguageUsed () );
+        return solutionRecord;
     }
 
 }
