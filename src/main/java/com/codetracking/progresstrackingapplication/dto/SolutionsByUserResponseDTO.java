@@ -12,18 +12,20 @@ import java.util.List;
 @Setter @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class SolutionsResponseDTO {
+public class SolutionsByUserResponseDTO {
 
-    private List<SolutionRecord> solutions = new ArrayList<> ();
-    private ProblemDTO relatedProblem;
+    private List<SolutionRecord> solutions = new ArrayList<>();
+    private long userId;
+    private String username;
 
-    @Getter @Setter
+    @Setter @Getter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class SolutionRecord {
         private long id;
         private Date time;
         private String languageUsed;
+        private ProblemDTO problem;
     }
 
 }

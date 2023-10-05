@@ -52,15 +52,32 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
     }
 
     @Override
-    public SolutionsResponseDTO getSolutions (String email, String problemName ) {
+    public SolutionsByUserResponseDTO getAllSolutions (String email ) {
+        User user = userRepository.findByEmail ( email )
+                                  .orElseThrow ( () -> new AuthenticationFailedException ( "email not found" ) );
+        List<Solution> solutions = repository.findByUser ( user.getId () );
+
+        SolutionsByUserResponseDTO response = new SolutionsByUserResponseDTO();
+        solutions.forEach (
+                solution -> response.getSolutions ().add ( createUserSolutionRecord ( solution ) )
+        );
+
+        response.setUsername ( user.getEmail () );
+        response.setUserId ( user.getId () );
+
+        return response;
+    }
+
+    @Override
+    public SolutionsOfProblemResponseDTO getSolutions (String email, String problemName ) {
         User user = userRepository.findByEmail ( email )
                                   .orElseThrow ( () -> new AuthenticationFailedException ( "email not found" ) );
 
         List<Solution> solutions = repository.findByProblem ( problemName, user.getId () );
 
-        SolutionsResponseDTO response = new SolutionsResponseDTO();
+        SolutionsOfProblemResponseDTO response = new SolutionsOfProblemResponseDTO();
         solutions.forEach (
-                solution -> response.getSolutions ().add ( createSolutionRecord ( solution ) )
+                solution -> response.getSolutions ().add ( createProblemSolutionRecord ( solution ) )
         );
 
         response.setRelatedProblem ( createProblemDTO ( solutions.get ( 0 ) ) );
@@ -95,11 +112,20 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
         return problemDTO;
     }
 
-    private SolutionsResponseDTO.SolutionRecord createSolutionRecord ( Solution solution ) {
-        SolutionsResponseDTO.SolutionRecord solutionRecord = new SolutionsResponseDTO.SolutionRecord();
+    private SolutionsOfProblemResponseDTO.SolutionRecord createProblemSolutionRecord (Solution solution ) {
+        SolutionsOfProblemResponseDTO.SolutionRecord solutionRecord = new SolutionsOfProblemResponseDTO.SolutionRecord();
         solutionRecord.setId ( solution.getId () );
         solutionRecord.setTime ( solution.getTime () );
         solutionRecord.setLanguageUsed ( solution.getLanguageUsed () );
+        return solutionRecord;
+    }
+
+    private SolutionsByUserResponseDTO.SolutionRecord createUserSolutionRecord ( Solution solution ) {
+        SolutionsByUserResponseDTO.SolutionRecord solutionRecord = new SolutionsByUserResponseDTO.SolutionRecord();
+        solutionRecord.setId ( solution.getId () );
+        solutionRecord.setTime ( solution.getTime () );
+        solutionRecord.setLanguageUsed ( solution.getLanguageUsed() );
+        solutionRecord.setProblem ( createProblemDTO ( solution ) );
         return solutionRecord;
     }
 

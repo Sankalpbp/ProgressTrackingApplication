@@ -24,4 +24,11 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
     )
     public List<Solution> findByProblem ( String problemName, long userId );
 
+    @Query (
+            "SELECT s " +
+            "FROM Solution s INNER JOIN s.user u " +
+            "WHERE u.id = :userId"
+    )
+    public List<Solution> findByUser ( long userId );
+
 }

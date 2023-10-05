@@ -2,9 +2,9 @@ package com.codetracking.progresstrackingapplication.controller;
 
 import com.codetracking.progresstrackingapplication.constants.ApiConstants;
 import com.codetracking.progresstrackingapplication.dto.SolutionDTO;
+import com.codetracking.progresstrackingapplication.dto.SolutionsByUserResponseDTO;
 import com.codetracking.progresstrackingapplication.dto.SolutionsCountDTO;
-import com.codetracking.progresstrackingapplication.dto.SolutionsResponseDTO;
-import com.codetracking.progresstrackingapplication.entity.Solution;
+import com.codetracking.progresstrackingapplication.dto.SolutionsOfProblemResponseDTO;
 import com.codetracking.progresstrackingapplication.service.ProgressTrackingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,10 +36,11 @@ public class ProgressTrackingController {
         return new ResponseEntity<> ( service.addSolution ( userDetails.getUsername (), solution ), HttpStatus.CREATED );
     }
 
-    @GetMapping ( "/getSolutions" )
-    public List<Solution> getSolutions ( @AuthenticationPrincipal UserDetails userDetails ) {
+    @GetMapping
+    public ResponseEntity<SolutionsByUserResponseDTO> getSolutions (@AuthenticationPrincipal UserDetails userDetails ) {
+        /* TODO: This method must have some sorting and pagination */
         String email = userDetails.getUsername ();
-        return List.of ( new Solution(), new Solution () );
+        return ResponseEntity.ok ( service.getAllSolutions ( email ) );
     }
 
     @GetMapping ( "/getSolutionsCount/{problemName}" )
@@ -49,8 +50,9 @@ public class ProgressTrackingController {
     }
 
     @GetMapping ( "/{problemName}" )
-    public ResponseEntity<SolutionsResponseDTO> getSolutions (@AuthenticationPrincipal UserDetails userDetails,
-                                                              @PathVariable ( "problemName" ) String problemName ) {
+    public ResponseEntity<SolutionsOfProblemResponseDTO> getSolutions (@AuthenticationPrincipal UserDetails userDetails,
+                                                                       @PathVariable ( "problemName" ) String problemName ) {
+        /* TODO: This method must have some sorting and pagination */
         return ResponseEntity.ok ( service.getSolutions ( userDetails.getUsername (), problemName ) );
     }
 
