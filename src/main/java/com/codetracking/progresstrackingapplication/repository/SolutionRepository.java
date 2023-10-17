@@ -3,7 +3,6 @@ package com.codetracking.progresstrackingapplication.repository;
 import com.codetracking.progresstrackingapplication.entity.Solution;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -18,12 +17,14 @@ public interface SolutionRepository extends JpaRepository<Solution, Long> {
     public int countByProblem ( String problemName, long userId );
 
     @Query (
-            "SELECT s " +
-            "FROM Solution s INNER JOIN s.problem p INNER JOIN s.user u " +
-            "WHERE p.name = :problemName " +
-            "AND u.id = :userId"
+            value = "SELECT new Solution ( s.id, time, languageUsed ) " +
+                    "FROM Solution s " +
+                    "INNER JOIN s.problem p " +
+                    "INNER JOIN s.user u " +
+                    "WHERE p.id = :problemId " +
+                    "AND u.id = :userId"
     )
-    public List<Solution> findByProblem ( String problemName, long userId );
+    public List<Solution> findByProblem ( long problemId, long userId );
 
     @Query (
             value = "SELECT s.id, time, user_id, problem_id, language_used " +

@@ -49,4 +49,11 @@ public class Solution {
             nullable = false
     )
     private Problem problem;
+
+    public Solution ( long id, Date time, String languageUsed ) {
+        this.id = id;
+        this.time = time;
+        this.languageUsed = languageUsed;
+    }
+
 }

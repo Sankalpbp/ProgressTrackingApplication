@@ -2,8 +2,7 @@ package com.codetracking.progresstrackingapplication.service.impl;
 
 import com.codetracking.progresstrackingapplication.constants.ApiConstants;
 import com.codetracking.progresstrackingapplication.dto.*;
-import com.codetracking.progresstrackingapplication.entity.Solution;
-import com.codetracking.progresstrackingapplication.entity.User;
+import com.codetracking.progresstrackingapplication.entity.*;
 import com.codetracking.progresstrackingapplication.exception.AuthenticationFailedException;
 import com.codetracking.progresstrackingapplication.exception.ResourceNotFoundException;
 import com.codetracking.progresstrackingapplication.repository.ProblemRepository;
@@ -11,12 +10,8 @@ import com.codetracking.progresstrackingapplication.repository.SolutionRepositor
 import com.codetracking.progresstrackingapplication.repository.UserRepository;
 import com.codetracking.progresstrackingapplication.service.ProgressTrackingService;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -70,12 +65,10 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
                                                            pageSize );
         int solutionsCount = repository.countByUser ( user.getId () );
 
-        List<SolutionsByUserResponseDTO.SolutionRecord> solutionRecords = solutions.stream ()
-                                                                                   .map ( this :: createUserSolutionRecord )
-                                                                                   .toList ();
-
         return SolutionsByUserResponseDTO.builder ()
-                                         .solutions ( solutionRecords )
+                                         .solutions ( solutions.stream ()
+                                                               .map ( this :: createUserSolutionRecord )
+                                                               .toList () )
                                          .userId ( user.getId () )
                                          .username ( user.getEmail () )
                                          .pageNumber ( pageNumber )
@@ -87,19 +80,40 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
     }
 
     @Override
-    public SolutionsOfProblemResponseDTO getSolutions (String email, String problemName ) {
+    public SolutionsOfProblemResponseDTO getSolutions (String email,
+                                                       String problemName,
+                                                       int pageNumber,
+                                                       int pageSize,
+                                                       String sortDir) {
         User user = userRepository.findByEmail ( email )
                                   .orElseThrow ( () -> new AuthenticationFailedException ( "email not found" ) );
 
-        List<Solution> solutions = repository.findByProblem ( problemName, user.getId () );
+        Problem problem = problemRepository.findByName ( problemName )
+                                           .orElseThrow ( () -> new ResourceNotFoundException ( "problems",
+                                                                                                "name",
+                                                                                                problemName ) );
+        int solutionsCount = repository.countByProblem ( problemName, user.getId () );
 
-        SolutionsOfProblemResponseDTO response = new SolutionsOfProblemResponseDTO();
-        solutions.forEach (
-                solution -> response.getSolutions ().add ( createProblemSolutionRecord ( solution ) )
-        );
+        List<Solution> solutions = repository.findByProblem ( problem.getId (),
+                                                              user.getId () );
+        List<Solution> solutionsForRequiredPage = solutions.subList ( pageNumber * pageSize, Math.min ( pageNumber * pageSize + pageSize, solutions.size () ) );
 
-        response.setRelatedProblem ( createProblemDTO ( solutions.get ( 0 ) ) );
-        return response;
+        return SolutionsOfProblemResponseDTO.builder ()
+                                            .solutions ( solutionsForRequiredPage.stream ()
+                                                                  .map ( this :: createProblemSolutionRecord )
+                                                                  .toList () )
+                                            .relatedProblem ( createProblemDTO ( new Solution () {
+                                                @Override
+                                                public Problem getProblem () {
+                                                    return problem;
+                                                }
+                                            } ) )
+                                            .pageNumber ( pageNumber )
+                                            .pageSize ( pageSize )
+                                            .totalElements ( solutionsCount )
+                                            .totalPages ((long) Math.ceil ((double) solutionsCount / pageSize))
+                                            .last ( ( solutionsCount / pageSize ) == pageNumber )
+                                            .build ();
     }
 
     @Override

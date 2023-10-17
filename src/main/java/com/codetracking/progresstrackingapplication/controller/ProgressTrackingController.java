@@ -5,7 +5,6 @@ import com.codetracking.progresstrackingapplication.dto.SolutionDTO;
 import com.codetracking.progresstrackingapplication.dto.SolutionsByUserResponseDTO;
 import com.codetracking.progresstrackingapplication.dto.SolutionsCountDTO;
 import com.codetracking.progresstrackingapplication.dto.SolutionsOfProblemResponseDTO;
-import com.codetracking.progresstrackingapplication.exception.ApiException;
 import com.codetracking.progresstrackingapplication.service.ProgressTrackingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,22 +52,34 @@ public class ProgressTrackingController {
     ) {
         /* The solutions can only be sorted on the basis of the time when they were submitted,
            so no point of sortBy field */
-        service.validate ( sortDir );
+        service.validate ( sortDir, pageSize );
         String email = userDetails.getUsername ();
         return ResponseEntity.ok ( service.getAllSolutions ( email, pageNumber, pageSize, sortDir ) );
     }
 
     @GetMapping ( "/getSolutionsCount/{problemName}" )
-    public ResponseEntity<SolutionsCountDTO> getSolutionsCount (@AuthenticationPrincipal UserDetails userDetails,
-                                                                @PathVariable ( "problemName" ) String problemName ) {
-        return ResponseEntity.ok ( service.getSolutionsCount ( userDetails.getUsername (), problemName ) );
+    public ResponseEntity<SolutionsCountDTO> getSolutionsCount ( @AuthenticationPrincipal UserDetails userDetails, @PathVariable ( "problemName" ) String problemName ) {
+        String email = userDetails.getUsername ();
+        return ResponseEntity.ok ( service.getSolutionsCount ( email, problemName ) );
     }
 
     @GetMapping ( "/{problemName}" )
-    public ResponseEntity<SolutionsOfProblemResponseDTO> getSolutions (@AuthenticationPrincipal UserDetails userDetails,
-                                                                       @PathVariable ( "problemName" ) String problemName ) {
+    public ResponseEntity<SolutionsOfProblemResponseDTO> getSolutions (
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable ( "problemName" ) String problemName,
+            @RequestParam (
+                    value = "pageNumber", defaultValue = ApiConstants.DEFAULT_PAGE_NUMBER, required = false
+            ) @Min ( 0 ) int pageNumber,
+            @RequestParam (
+                    value = "pageSize", defaultValue = ApiConstants.DEFAULT_PAGE_SIZE, required = false
+            ) @Max ( 50 ) int pageSize,
+            @RequestParam (
+                    value = "sortDir", defaultValue = ApiConstants.DEFAULT_SORT_BY_DIRECTION, required = false
+            ) String sortDir
+    ) {
         /* TODO: This method must have some sorting and pagination */
-        return ResponseEntity.ok ( service.getSolutions ( userDetails.getUsername (), problemName ) );
+        service.validate ( sortDir, pageSize );
+        return ResponseEntity.ok ( service.getSolutions ( userDetails.getUsername (), problemName, pageNumber, pageSize, sortDir ) );
     }
 
 }
