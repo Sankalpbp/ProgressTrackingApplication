@@ -1,17 +1,12 @@
 package com.codetracking.progresstrackingapplication.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@Setter @Getter
-@AllArgsConstructor
-@NoArgsConstructor
+@Getter
 public class SolutionsByUserResponseDTO {
 
     private List<SolutionRecord> solutions = new ArrayList<>();
@@ -23,18 +18,67 @@ public class SolutionsByUserResponseDTO {
     private long totalPages;
     private boolean last;
 
+    private SolutionsByUserResponseDTO () {
+
+    }
+
     public static Builder builder () {
         return new Builder ();
     }
 
-    @Setter @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
+    @Getter
     public static class SolutionRecord {
         private long id;
         private Date time;
         private String languageUsed;
         private ProblemDTO problem;
+
+        private SolutionRecord () {
+
+        }
+
+        public static Builder builder () {
+            return new Builder ();
+        }
+
+        public static class Builder {
+
+            private long id;
+            private Date time;
+            private String languageUsed;
+            private ProblemDTO problem;
+
+            private Builder () {
+
+            }
+
+            public Builder id ( long id ) {
+                this.id = id;
+                return this;
+            }
+            public Builder time ( Date time ) {
+                this.time = time;
+                return this;
+            }
+            public Builder languageUsed ( String languageUsed ) {
+                this.languageUsed = languageUsed;
+                return this;
+            }
+            public Builder problem ( ProblemDTO problem ) {
+                this.problem = problem;
+                return this;
+            }
+
+            public SolutionRecord build () {
+                SolutionRecord record = new SolutionRecord();
+                record.id = id;
+                record.time = time;
+                record.languageUsed = languageUsed;
+                record.problem = problem;
+
+                return record;
+            }
+        }
     }
 
     public static class Builder {

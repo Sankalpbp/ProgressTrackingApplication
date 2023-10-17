@@ -96,7 +96,9 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
 
         List<Solution> solutions = repository.findByProblem ( problem.getId (),
                                                               user.getId () );
-        List<Solution> solutionsForRequiredPage = solutions.subList ( pageNumber * pageSize, Math.min ( pageNumber * pageSize + pageSize, solutions.size () ) );
+        List<Solution> solutionsForRequiredPage = solutions.subList ( pageNumber * pageSize,
+                                                                         Math.min ( pageNumber * pageSize + pageSize,
+                                                                                    solutions.size () ) );
 
         return SolutionsOfProblemResponseDTO.builder ()
                                             .solutions ( solutionsForRequiredPage.stream ()
@@ -145,20 +147,20 @@ public class ProgressTrackingServiceImpl implements ProgressTrackingService {
     }
 
     private SolutionsOfProblemResponseDTO.SolutionRecord createProblemSolutionRecord (Solution solution ) {
-        SolutionsOfProblemResponseDTO.SolutionRecord solutionRecord = new SolutionsOfProblemResponseDTO.SolutionRecord();
-        solutionRecord.setId ( solution.getId () );
-        solutionRecord.setTime ( solution.getTime () );
-        solutionRecord.setLanguageUsed ( solution.getLanguageUsed () );
-        return solutionRecord;
+        return SolutionsOfProblemResponseDTO.SolutionRecord.builder ()
+                                                           .id ( solution.getId () )
+                                                           .time ( solution.getTime () )
+                                                           .languageUsed( solution.getLanguageUsed() )
+                                                           .build ();
     }
 
     private SolutionsByUserResponseDTO.SolutionRecord createUserSolutionRecord ( Solution solution ) {
-        SolutionsByUserResponseDTO.SolutionRecord solutionRecord = new SolutionsByUserResponseDTO.SolutionRecord();
-        solutionRecord.setId ( solution.getId () );
-        solutionRecord.setTime ( solution.getTime () );
-        solutionRecord.setLanguageUsed ( solution.getLanguageUsed() );
-        solutionRecord.setProblem ( createProblemDTO ( solution ) );
-        return solutionRecord;
+        return SolutionsByUserResponseDTO.SolutionRecord.builder ()
+                                                        .id ( solution.getId () )
+                                                        .time ( solution.getTime () )
+                                                        .languageUsed ( solution.getLanguageUsed() )
+                                                        .problem ( createProblemDTO ( solution ) )
+                                                        .build ();
     }
 
 }
